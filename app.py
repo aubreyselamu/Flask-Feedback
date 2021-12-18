@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm
@@ -20,10 +20,9 @@ def homepage():
     return redirect('/register')
 
 @app.route('/register', methods=["GET","POST"])
-def show_register_form():
+def register_user():
     '''Show user form and process form by adding a new user'''
     form = RegisterForm()
-
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
@@ -31,14 +30,18 @@ def show_register_form():
         first_name = form.first_name.data
         last_name = form.last_name.data
 
-        new_user = User(username=username,password=password,email=email,first_name=first_name,last_name=last_name)
-        db.session.add(new_user)
-        db.session.commit()
+        user = User.register(username, password,first_name,last_name,email)
 
-    return render_template('register.html', form=form)
+        
+        db.session.commit()
+        session['username'] = user.username
+
+        return redirect('/secret')
+    else:
+        return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
-def show_login_form():
+def login_user():
     '''Show login form and process the login form'''
 
     form = LoginForm()
@@ -47,13 +50,29 @@ def show_login_form():
         username=form.username.data
         password=form.password.data
 
-        user = User.query.filter_by(username=username).first()
+        user = User.authenticate(username,password)
 
-        if user and user.password == password:
+        if user:
+            session['username'] = user.username
             return redirect('/secret')
-
+        else:
+            form.username.errors = ['Invalid username/password']
+            return render_template('login.html', form=form)
     return render_template('login.html', form=form)
+
+
+
 
 @app.route('/secret')
 def secret():
-    return "<h1>It is working</h1>"
+    if 2==5:
+        flash("Please login first")
+        return redirect('/login')
+    else:
+        return "<h1>You made it!</h1>"
+
+@app.route('/logout')
+def logout_user():
+    session.pop("username")
+    return redirect('/login')
+
