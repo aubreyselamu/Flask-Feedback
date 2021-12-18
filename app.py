@@ -34,6 +34,7 @@ def show_register_form():
         new_user = User(username=username,password=password,email=email,first_name=first_name,last_name=last_name)
         db.session.add(new_user)
         db.session.commit()
+
     return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -46,5 +47,13 @@ def show_login_form():
         username=form.username.data
         password=form.password.data
 
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            return redirect('/secret')
+
     return render_template('login.html', form=form)
 
+@app.route('/secret')
+def secret():
+    return "<h1>It is working</h1>"
