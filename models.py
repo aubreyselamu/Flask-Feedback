@@ -20,4 +20,3 @@ class User(db.Model):
     last_name = db.Column(db.String(30), nullable=False)
 
 
-
