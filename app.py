@@ -6,7 +6,13 @@ from models import connect_db
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True 
 app.config['SECRET_KEY'] = 'Yohanna_12'
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
+@app.route('/')
+def homepage():
+    return redirect('/register')
