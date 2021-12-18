@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="display-4">Register</h1>
-<p class="lead">Register for our site.</p>
+<h1 class="display-4">Login</h1>
+<p class="lead">Login Below.</p>
 
 <form method="POST">
 
@@ -15,12 +15,13 @@
     {{ field }}
 
     {% for error in field.errors %}
-    {{ error }}
+    <p class="form-text text-danger">{{ error }}</p>
+    
     {% endfor %}
   </p>
   {% endfor %}
 
-  <button type="submit">Register</button>
+  <button type="submit">Login</button>
 
 </form>
 
