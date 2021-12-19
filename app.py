@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm
+from werkzeug.exceptions import Unauthorized
 
 from models import connect_db
 
@@ -23,6 +24,7 @@ def homepage():
 def register_user():
     '''Show user form and process form by adding a new user'''
     form = RegisterForm()
+
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
@@ -38,7 +40,7 @@ def register_user():
 
         return redirect('/secret')
     else:
-        return render_template('register.html', form=form)
+        return render_template('users/register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
@@ -58,21 +60,24 @@ def login_user():
         else:
             form.username.errors = ['Invalid username/password']
             return render_template('login.html', form=form)
-    return render_template('login.html', form=form)
+    return render_template('users/login.html', form=form)
 
 
+@app.route('/users/<username>')
+def show_user(username):
+    '''Example page for logged-in-users'''
 
+    if "username" not in session or username != session['username']:
+        raise Unauthorized()
 
-@app.route('/secret')
-def secret():
-    if 2==5:
-        flash("Please login first")
-        return redirect('/login')
-    else:
-        return "<h1>You made it!</h1>"
+    user = User.query.filter_by(username=username).first()
+
+    return render_template('users/show.html', user=user)
 
 @app.route('/logout')
 def logout_user():
+    '''Logout user'''
+
     session.pop("username")
     return redirect('/login')
 
