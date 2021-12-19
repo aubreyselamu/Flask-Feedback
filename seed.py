@@ -18,10 +18,11 @@ olani= User.register(username='olani.selamu', password="shawn", email='olani.sel
 yohanna = User.register(username='yohanna.selamu', password="oreos", email='yohanna.selamu@gmail.com', first_name='Yohanna', last_name='Selamu')
 
 aubrey_feedback = Feedback(title='My First Review', content='I hope this works!', username='aubrey.selamu')
+aubrey_feedback2 = Feedback(title='My Second Review', content='It is working!', username='aubrey.selamu')
 olani_feedback = Feedback(title='My First Feedback', content='I am a software engineer!', username='olani.selamu')
 yohanno_feedback = Feedback(title='Im going to be great!', content='Great app!', username='yohanna.selamu')
 
-db.session.add_all([aubrey,olani,yohanna,aubrey_feedback,olani_feedback,yohanno_feedback])
+db.session.add_all([aubrey,olani,yohanna,aubrey_feedback, aubrey_feedback2, olani_feedback,yohanno_feedback])
 db.session.commit()
 
 
