@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, Feedback
 from forms import FeedbackForm, RegisterForm, LoginForm
 from werkzeug.exceptions import Unauthorized
 
@@ -97,11 +97,51 @@ def remove_user_feedback(username):
     return redirect('/')
 
 
-@app.route('/users/<username>/feedback/add')
+@app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
 def add_feedback(username):
     '''Display feedback form and process'''
-    form = FeedbackForm()
-    return render_template('feedback/add_feedback.html', form=form)
 
+    if "username" not in session or username != session["username"]:
+        raise Unauthorized()
+
+    form = FeedbackForm()
+    
+    if form.validate_on_submit():
+        title = form.title.data
+        content=form.content.data
+
+        feedback = Feedback(
+            title=title,
+            content=content,
+            username=username)
+
+        db.session.add(feedback)
+        db.session.commit()
+
+        return redirect(f'/users/{feedback.username}')
+
+    else:
+        return render_template('feedback/new.html', form=form)
+
+@app.route('/feedback/<int:feedback_id>/update', methods=["GET", "POST"])
+def edit_feedback(feedback_id):
+    '''Display form to edit feedback'''
+
+    feedback = Feedback.query.get_or_404(feedback_id)
+
+    if "username" not in session or feedback.username != session["username"]:
+        raise Unauthorized()
+
+    form = FeedbackForm(obj=feedback)
+
+    if form.validate_on_submit():
+        feedback.title = form.title.data
+        feedback.content = form.content.data
+
+        db.session.commit()
+
+        return redirect(f'users/{feedback.username}')
+   
+    return render_template('feedback/edit.html', form=form)
 
 
