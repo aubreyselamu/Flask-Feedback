@@ -10,4 +10,33 @@
     </ul>
   </div>
 
+<div class="card" style="width: 16rem;">
+    <ul class="list-group list-group-flush">
+        {% for feedback in user.feedback%}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">{{feedback.title}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{feedback.username}}</h6>
+              <p class="card-text">{{feedback.content}}</p>
+    
+             
+            
+        <form>
+            <button class="btn btn-primary"
+                formmethod="GET"
+                formaction="/feedback/{{ feedback.id }}/update">
+          Edit
+        </button>
+              <button class="btn btn-danger"
+                    formaction="/feedback/{{feedback.id}}/delete"
+                    formmethod="POST">Delete</button>
+            </form>
+            </div>
+          </div>
+          {% endfor %}
+    </ul>
+
+    
+</div>
+
 {% endblock %}
