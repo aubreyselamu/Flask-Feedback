@@ -1,22 +1,27 @@
-from models import User, db
+from models import User, Feedback, db
 from app import app
 
+
+#*******************************************************************************************
+#User Model
 # Create all tables
 db.drop_all()
 db.create_all()
 
 # If table isn't empty, empty it
 User.query.delete()
+Feedback.query.delete()
 
-# Add pets
-aubrey = User(username='aubrey.selamu', password="Yohanna_12", email='aubrey.selamu@gmail.com', first_name='Aubrey', last_name='Selamu-Bell')
-olani= User(username='olani.selamu', password="shawn", email='olani.selamu@gmail.com', first_name='Olani', last_name='Mendes')
-yohanna = User(username='yohanna.selamu', password="oreos", email='yohanna.selamu@gmail.com', first_name='Yohanna', last_name='Selamu')
+# Add sample Users and Feedback
+aubrey = User.register(username='aubrey.selamu', password="Yohanna_12", email='aubrey.selamu@gmail.com', first_name='Aubrey', last_name='Selamu-Bell')
+olani= User.register(username='olani.selamu', password="shawn", email='olani.selamu@gmail.com', first_name='Olani', last_name='Mendes')
+yohanna = User.register(username='yohanna.selamu', password="oreos", email='yohanna.selamu@gmail.com', first_name='Yohanna', last_name='Selamu')
 
-# Add new objects to session, so they'll persist
-db.session.add(aubrey)
-db.session.add(olani)
-db.session.add(yohanna)
+aubrey_feedback = Feedback(title='My First Review', content='I hope this works!', username='aubrey.selamu')
+olani_feedback = Feedback(title='My First Feedback', content='I am a software engineer!', username='olani.selamu')
+yohanno_feedback = Feedback(title='Im going to be great!', content='Great app!', username='yohanna.selamu')
 
-# Commit--otherwise, this never gets saved!
+db.session.add_all([aubrey,olani,yohanna,aubrey_feedback,olani_feedback,yohanno_feedback])
 db.session.commit()
+
+
