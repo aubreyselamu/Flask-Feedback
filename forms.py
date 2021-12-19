@@ -22,4 +22,6 @@ class FeedbackForm(FlaskForm):
     '''Form for adding feedback'''
     title = StringField("Title", validators=[InputRequired()])
     content=StringField("Content", validators=[InputRequired()])
-    
+
+class DeleteForm(FlaskForm):
+    """Delete form -- this form is intentionally blank."""
