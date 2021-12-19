@@ -56,7 +56,7 @@ def login_user():
 
         if user:
             session['username'] = user.username
-            return redirect('/secret')
+            return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ['Invalid username/password']
             return render_template('login.html', form=form)
