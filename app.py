@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
-from forms import RegisterForm, LoginForm
+from forms import FeedbackForm, RegisterForm, LoginForm
 from werkzeug.exceptions import Unauthorized
 
 from models import connect_db
@@ -63,6 +63,14 @@ def login_user():
     return render_template('users/login.html', form=form)
 
 
+@app.route('/logout')
+def logout_user():
+    '''Logout user'''
+
+    session.pop("username")
+    return redirect('/login')
+
+
 @app.route('/users/<username>')
 def show_user(username):
     '''Example page for logged-in-users'''
@@ -72,12 +80,28 @@ def show_user(username):
 
     user = User.query.filter_by(username=username).first()
 
+
+
     return render_template('users/show.html', user=user)
 
-@app.route('/logout')
-def logout_user():
-    '''Logout user'''
-
+@app.route('/users/<username>/delete', methods=["POST"])
+def remove_user_feedback(username):
+    '''Remove user and redirect to login'''
+    if "username" not in session or username != session["username"]:
+        raise Unauthorized()
+    
+    user = User.query.delete()
+    db.session.delete(user)
+    db.session.commit()
     session.pop("username")
-    return redirect('/login')
+    return redirect('/')
+
+
+@app.route('/users/<username>/feedback/add')
+def add_feedback(username):
+    '''Display feedback form and process'''
+    form = FeedbackForm()
+    return render_template('feedback/add_feedback.html', form=form)
+
+
 
